@@ -12,6 +12,23 @@ class Medium extends Model
 {
     use HasFactory;
 
+    protected $table = 'mediums';
+
+    protected $fillable = [
+        'guid',
+        'slug',
+        'image',
+        'first_paragraph',
+        'publication',
+        'category',
+        'data',
+    ];
+
+    protected $casts = [
+        'data' => 'object', // แปลง json_data เป็น object อัตโนมัติ
+        'category' => 'array', // แปลง json_data เป็น object อัตโนมัติ
+    ];
+
     public static function fetch($publication, $tagname = "", $driver = "file")
     {
         // $url = "https://news.google.com/news/rss";

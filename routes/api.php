@@ -22,13 +22,49 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('/publication', PublicationController::class);
 Route::prefix('medium')->group(function () {
+    Route::get('test', function () {
+        // return "start";
+        $feed_url = "https://medium.com/feed/ckartisan";
+        try {
+            //code...
+            $xml = simplexml_load_file($feed_url, "SimpleXMLElement", LIBXML_NOCDATA);
+            // $xml = simplexml_load_file($feed_url, "SimpleXMLElement", LIBXML_NOBLANKS);
+            // $xml = simplexml_load_file($feed_url);
+
+            if ($xml === false) {
+                return "Error fetching RSS feed.";
+            } else {
+                foreach ($xml->channel->item as $item) {
+                    // echo "<h2><a href='{$item->link}'>{$item->title}</a></h2>";
+                    // echo "<p>{$item->description}</p>";
+                }
+                // return "data";
+                return response()->json($xml);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return "thrown";
+        }
+    });
+    // http://localhost:8000/api/medium/articles/feed/ckartisan
+    Route::prefix('articles')->group(function () {
+        Route::get('/feed/{publication?}', [MediumController::class, 'index']);
+        Route::get('/feed/{publication?}/tagged/{tagname?}', [MediumController::class, 'index']);
+    });
+    // http://localhost:8000/api/medium/articles/update/feed/ckartisan
+    Route::prefix('articles/update')->group(function () {
+        Route::get('/feed/{publication?}', [MediumController::class, 'update']);
+        Route::get('/feed/{publication?}/tagged/{tagname?}', [MediumController::class, 'update']);
+    });
+
+
     Route::get('/feed/{publication?}', [MediumController::class, 'feed']);
     Route::get('/feed/{publication?}/tagged/{tagname?}', [MediumController::class, 'feed']);
     Route::get('/feednocache/{publication?}', [MediumController::class, 'feedNoCache']);
     Route::get('/feednocache/{publication?}/tagged/{tagname?}', [MediumController::class, 'feedNoCache']);
     // tagged/[tag-name]
-    Route::get('/ckartisan', [MediumController::class, 'ckartisan']);
-    Route::get('/ckartisan2', [MediumController::class, 'ckartisan2']);
+    // Route::get('/ckartisan', [MediumController::class, 'ckartisan']);
+    // Route::get('/ckartisan2', [MediumController::class, 'ckartisan2']);
 });
 
 // PROVINCE - AMPHOE - TAMBON
